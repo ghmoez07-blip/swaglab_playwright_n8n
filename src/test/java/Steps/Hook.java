@@ -20,7 +20,7 @@ public class Hook {
         if (playwright == null) {
             playwright = Playwright.create();
             // launch(new BrowserType.LaunchOptions().setHeadless(false)) permet de voir le navigateur
-            browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+            browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
         }
         // Un nouveau contexte et une nouvelle page pour chaque scénario (isolation totale)
         context = browser.newContext();
