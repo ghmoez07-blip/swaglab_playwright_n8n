@@ -1,0 +1,35 @@
+name: Playwright Java BDD Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # ÉTAPE CORRIGÉE : On télécharge d'abord tout proprement
+      - name: Install Dependencies and Playwright Browsers
+        run: |
+          mvn dependency:resolve
+          mvn compile
+          mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
+
+      - name: Run Cucumber Tests
+        run: mvn test -Dtest=TestRunner
+
+      - name: Notify n8n
+        if: always()
+        run: |
+          curl -X POST https://jobgate.app.n8n.cloud/webhook-test/resultat-selenium \
+          -d "status=${{ job.status }}"
